@@ -232,8 +232,9 @@ window.vm = new Vue({
   methods: {
     checkVersion: function () {
       $.ajax({
-        url: LOCAL_URL + "api/v1/version",
+        url: LOCAL_URL + "api/v1/version?uniq_param" + (new Date()).getTime(),
         type: "GET",
+        cache: false
       })
         .done((ret) => {
           this.version = ret.version;
@@ -366,12 +367,14 @@ window.vm = new Vue({
       var lastDeviceId = this.deviceId;
       this.deviceId = '';
       return $.ajax({
-        url: LOCAL_URL + "api/v1/connect",
+        url: LOCAL_URL + "api/v1/connect?uniq_param" + (new Date()).getTime(),
         method: 'POST',
         data: {
           platform: this.platform,
           deviceUrl: this.deviceUrl,
+          'uniq_param' : (new Date()).getTime()
         },
+        cache: false
       })
         .then((ret) => {
           console.log("deviceId", ret.deviceId)
@@ -777,7 +780,7 @@ window.vm = new Vue({
     },
     dumpHierarchy: function () { // v2
       this.dumping = true
-      return $.getJSON(LOCAL_URL + 'api/v2/devices/' + encodeURIComponent(this.deviceId || '-') + '/hierarchy')
+      return $.getJSON(LOCAL_URL + 'api/v2/devices/' + encodeURIComponent(this.deviceId || '-') + '/hierarchy?uniq_param' + (new Date()).getTime())
         .fail((ret) => {
           this.showAjaxError(ret);
         })
@@ -797,7 +800,7 @@ window.vm = new Vue({
         })
     },
     screenRefresh: function () {
-      return $.getJSON(LOCAL_URL + 'api/v1/devices/' + encodeURIComponent(this.deviceId || '-') + '/screenshot')
+      return $.getJSON(LOCAL_URL + 'api/v1/devices/' + encodeURIComponent(this.deviceId || '-') + '/screenshot?uniq_param' + (new Date()).getTime())
         .fail((err) => {
           this.showAjaxError(err);
         })
@@ -1099,6 +1102,7 @@ window.vm = new Vue({
       $.ajax({
         method: "post",
         url: "/api/v1/widgets",
+        cache: false,
         dataType: "json",
         contentType: 'application/json; charset=UTF-8',
         data: JSON.stringify({
@@ -1113,6 +1117,7 @@ window.vm = new Vue({
           screenshot: localStorage.screenshotBase64,
           windowSize: localStorage.windowSize.split(",").map(v => { return parseInt(v, 10) }),
           activity: localStorage.activity,
+          'uniq_param' : (new Date()).getTime()
         })
       }).then(ret => {
         const code = `d.widget.click("${ret.id}#${ret.note}")`;
